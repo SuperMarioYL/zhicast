@@ -1,0 +1,57 @@
+[project]
+name = "zhicast"
+version = "0.1.0"
+description = "把B站知识区文字脚本转成16:9横屏知识视频的开源工具"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "SuperMarioYL" }]
+requires-python = ">=3.12"
+keywords = ["bilibili", "tts", "video", "knowledge", "subtitle", "edge-tts", "ffmpeg"]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Multimedia :: Video",
+    "Topic :: Multimedia :: Sound/Audio :: Speech",
+    "Environment :: Console",
+]
+dependencies = [
+    "edge-tts>=6.1.0",
+    "ffmpeg-python>=0.2.0",
+    "pillow>=10.0.0",
+    "srt>=3.5.0",
+    "pydantic>=2.0",
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
+    "jinja2>=3.1",
+    "httpx>=0.27",
+    "typer>=0.12",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+
+[project.scripts]
+zhicast = "zhicast.cli:app"
+
+[project.urls]
+Homepage = "https://github.com/SuperMarioYL/zhicast"
+Repository = "https://github.com/SuperMarioYL/zhicast"
+Issues = "https://github.com/SuperMarioYL/zhicast/issues"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["zhicast"]
+
+[tool.hatch.build.targets.sdist]
+include = ["zhicast", "tests", "examples", "docs", "assets", "README.md", "README.en.md", "LICENSE", "VERSION"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

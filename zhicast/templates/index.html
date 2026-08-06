@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ZhiCast — 脚本直出知识区视频</title>
+  <style>
+    :root { --bg:#0E0E12; --panel:#1A1A22; --accent:#4DA3FF; --text:#F5F5F7; --dim:#A1A1A8; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--bg); color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+      padding:32px 16px; }
+    .wrap { max-width:880px; margin:0 auto; }
+    h1 { font-weight:700; margin:0 0 4px; }
+    p.sub { color:var(--dim); margin:0 0 24px; }
+    textarea { width:100%; min-height:280px; background:var(--panel); color:var(--text);
+      border:1px solid #2A2A34; border-radius:12px; padding:16px; font-family:"SF Mono",monospace;
+      font-size:14px; resize:vertical; }
+    .row { display:flex; gap:12px; align-items:center; margin-top:16px; flex-wrap:wrap; }
+    input[type=text] { background:var(--panel); color:var(--text); border:1px solid #2A2A34;
+      border-radius:8px; padding:10px 12px; font-size:14px; width:240px; }
+    button { background:var(--accent); color:#fff; border:0; border-radius:10px;
+      padding:12px 22px; font-size:15px; font-weight:600; cursor:pointer; }
+    button:hover { filter:brightness(1.1); }
+    .hint { color:var(--dim); font-size:13px; }
+    .err { background:#3a1414; border:1px solid #6b2424; color:#ffb4b4;
+      padding:12px 14px; border-radius:10px; margin-top:16px; white-space:pre-wrap; }
+    code { background:#23232c; padding:1px 5px; border-radius:4px; font-size:13px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>ZhiCast</h1>
+    <p class="sub">把 B站知识区文字脚本转成 16:9 横屏知识视频 · TTS 配音 + 烧录字幕 + 引用标注 + 封面</p>
+
+    {% if error %}
+    <div class="err">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" action="/generate">
+      <textarea name="script" placeholder="# 在这里贴你的知识区脚本
+
+## 一、开场
+今天聊一个被忽视的问题……
+
+> "引用原文……" (来源)
+
+正文段落，会被 TTS 念出来并自动对齐字幕。
+
+## 二、总结
+一句话收束。">{{ message }}</textarea>
+      <div class="row">
+        <label class="hint">音色</label>
+        <input type="text" name="voice" value="zh-CN-XiaoxiaoNeural" placeholder="edge-tts voice id">
+        <button type="submit">生成视频</button>
+        <span class="hint">默认 edge-tts，支持 <code>--tts-provider stub</code> 离线预览</span>
+      </div>
+    </form>
+
+    <p class="hint" style="margin-top:24px">
+      CLI 等价命令：<code>zhicast build script.md -o out/</code>
+    </p>
+  </div>
+</body>
+</html>
