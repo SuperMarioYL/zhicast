@@ -1,0 +1,75 @@
+{
+  "schema": 1,
+  "name": "zhicast",
+  "github": "https://github.com/SuperMarioYL/zhicast",
+  "host": "zhicast.lei6393.com",
+  "lang": { "primary": "zh", "toggle": true },
+  "accent": ["#e8738e"],
+  "hero": {
+    "eyebrow": {
+      "zh": "贴脚本 · 一键出片 · 免剪辑",
+      "en": "Paste a script · One-click video · No editing"
+    },
+    "headline": {
+      "zh": "写完脚本，就是成片\n一条命令直发知识区",
+      "en": "Script done, video ready\nOne command to a shippable 知识区 video"
+    },
+    "sub": {
+      "zh": "贴一段 markdown 脚本，自动配旁白、烧字幕、排引用卡片，直接出 16:9 成片和封面。",
+      "en": "Paste a markdown script — narration, burned-in subtitles and quote cards are laid out for you, and a 16:9 video plus cover comes out."
+    },
+    "command": "zhicast build script.md -o out/",
+    "cta": { "zh": "开始使用", "en": "Get started" },
+    "ctaGithub": { "zh": "GitHub 仓库", "en": "GitHub repo" },
+    "scroll": { "zh": "往下看", "en": "Scroll" }
+  },
+  "advantages": [
+    {
+      "title": { "zh": "一条命令，脚本变成片", "en": "One command, script to video" },
+      "body": {
+        "zh": "贴上脚本，旁白、字幕、引用卡片、封面一次跑完，几分钟拿到能直发的 16:9 成片——不用打开剪辑软件。",
+        "en": "Paste your script and narration, subtitles, quote cards and cover all render in one pass — a shippable 16:9 video in minutes, no editor open."
+      },
+      "chips": ["› 一条命令端到端", "› 出 MP4 + 封面 + 字幕"]
+    },
+    {
+      "title": { "zh": "字幕自己会对齐", "en": "Subtitles that align themselves" },
+      "body": {
+        "zh": "字幕跟着旁白的时间戳自动排好，每行不超 14 字、压在底部安全区，给弹幕留出节奏——不用手贴时间轴。",
+        "en": "Subtitles lay out from the narration's own timestamps — ≤14 characters a line, pinned to the bottom safe area, leaving room for 弹幕 rhythm. No manual timeline sync."
+      },
+      "chips": ["› 时间戳直出，免对齐", "› 底部安全区 · 留弹幕位"]
+    },
+    {
+      "title": { "zh": "知识区格式，开箱即用", "en": "Knowledge-area format, built in" },
+      "body": {
+        "zh": "引用标注卡、章节标题卡、16:9 封面都从脚本结构里长出来——你只管写正文，知识区的样子它都替你排好。",
+        "en": "Quote callout cards, section title cards and a 16:9 cover all grow out of your script's own structure — you write the body, the knowledge-area look is laid out for you."
+      },
+      "chips": ["› 引用卡 · 章节卡 · 封面", "› 从脚本结构直出"]
+    },
+    {
+      "title": { "zh": "本地预览页，贴上就出", "en": "A local preview page, paste and go" },
+      "body": {
+        "zh": "本地起个网页，贴上脚本点生成，成片直接在页面上播——旁白、字幕、卡片都在，满意就下载。",
+        "en": "Run a local page, paste a script, click generate — the finished video plays right on the page, narration and subtitles and cards all there. Download when it looks right."
+      },
+      "chips": ["› 本地网页 · 贴脚本即出", "› 成片页内直接播"]
+    }
+  ],
+  "scene": { "kind": "particle-field" },
+  "cta": {
+    "headline": { "zh": "脚本写完了？该出片了。", "en": "Script's done? Time to ship the video." },
+    "sub": {
+      "zh": "开源、免费、可商用。一条命令装好，引擎跑在你自己机器上。",
+      "en": "Open-source, free, commercially usable. Install in one command; the engine runs on your own machine."
+    },
+    "button": { "zh": "开始使用", "en": "Get started" }
+  },
+  "footer": {
+    "tag": {
+      "zh": "ZhiCast —— 给 B站知识区 UP主 的 script-to-video 工具 · MIT 开源",
+      "en": "ZhiCast — the script-to-video tool for B站 知识区 UP主 · MIT open-source"
+    }
+  }
+}
