@@ -104,6 +104,10 @@
           "alt": {
             "zh": "示例跑完整解析、静音音频、字幕、Pillow 场景与 ffmpeg 编码，并通过 ffprobe 读取视频尺寸和帧率。没有真实配音、上传或平台验收；临时成片在检查后清理。",
             "en": "The example runs parsing, silent audio, subtitles, Pillow scenes and ffmpeg encoding, then reads video dimensions and frame rate with ffprobe. It uses no real speech, upload or platform validation; temporary media is removed after inspection."
+          },
+          "mobile": {
+            "light": "/assets/presentation/process-mobile-light.svg",
+            "dark": "/assets/presentation/process-mobile-dark.svg"
           }
         }
       },
@@ -122,6 +126,10 @@
           "alt": {
             "zh": "parse 构建 ZhiScript，tts 填写片段时间与音频，subtitle 生成 SRT cue，overlay 用 Pillow 画卡片、字幕与封面，render 调用 ffmpeg 合成视频。CLI 与本地 Web 使用同一条处理路径，字幕绘制进 PNG 场景后编码，无需 libass。",
             "en": "parse builds ZhiScript; tts fills segment timing and audio; subtitle creates SRT cues; overlay draws cards, subtitles and covers with Pillow; render calls ffmpeg to compose video. CLI and local Web share this pipeline. Subtitles are drawn into PNG scenes before encoding, without libass."
+          },
+          "mobile": {
+            "light": "/assets/presentation/architecture-mobile-light.svg",
+            "dark": "/assets/presentation/architecture-mobile-dark.svg"
           }
         }
       },
@@ -140,6 +148,10 @@
           "alt": {
             "zh": "本地 CLI 可生成输出目录，Web 可粘贴脚本并下载结果。edge 是已实现的网络 TTS 路径；stub 生成静音。doubao 和 qwen 虽可通过参数选择，当前会明确报未实现。",
             "en": "The local CLI generates an output directory; the Web UI accepts pasted scripts and offers downloads. edge is an implemented network TTS path and stub generates silence. doubao and qwen are selectable names but currently raise not-implemented errors."
+          },
+          "mobile": {
+            "light": "/assets/presentation/integrations-mobile-light.svg",
+            "dark": "/assets/presentation/integrations-mobile-dark.svg"
           }
         }
       }
