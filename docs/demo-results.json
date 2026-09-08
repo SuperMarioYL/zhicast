@@ -1,0 +1,21 @@
+{
+  "version": "0.1.0",
+  "scope": "Complete parse, silent-stub audio, subtitles, Pillow scenes, cover and ffmpeg MP4 render, followed by ffprobe inspection. No live TTS, voice quality evaluation, platform upload or platform compliance validation.",
+  "inputs": [
+    {
+      "path": "examples/presentation-demo.py",
+      "sha256": "84798758b6f279bf93dbb29c528722719744a30724ab6a63b1d9c6841532a657"
+    },
+    {
+      "path": "examples/presentation-script.md",
+      "sha256": "08489351437f6bbcbe53929c0318c00f8565e898157cc859cb164a5050c2aae8"
+    }
+  ],
+  "steps": [
+    {
+      "command": ".venv/bin/python examples/presentation-demo.py",
+      "output": "{\n  \"tts_provider\": \"stub (silent audio)\",\n  \"segments\": 3,\n  \"subtitle_cues\": 3,\n  \"scene_images\": 6,\n  \"cover_exists\": true,\n  \"srt_exists\": true,\n  \"video_stream\": {\n    \"codec_name\": \"h264\",\n    \"width\": 1920,\n    \"height\": 1080,\n    \"r_frame_rate\": \"30/1\"\n  }\n}\n",
+      "exit_code": 0
+    }
+  ]
+}

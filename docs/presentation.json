@@ -1,0 +1,86 @@
+{
+  "name": "ZhiCast",
+  "tagline": "Turn a Markdown script into a video draft.",
+  "architecture": {
+    "title": "ZhiCast / data flow",
+    "nodes": [
+      {
+        "title": "Markdown parser",
+        "detail": "Title / narration / quote segments"
+      },
+      {
+        "title": "TTS and subtitle plan",
+        "detail": "Audio / boundaries / SRT"
+      },
+      {
+        "title": "Pillow scenes",
+        "detail": "Cards / burned-in subtitles / cover"
+      },
+      {
+        "title": "ffmpeg renderer",
+        "detail": "H.264 video and AAC audio"
+      }
+    ],
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ]
+    ]
+  },
+  "process": {
+    "title": "ZhiCast / example workflow",
+    "steps": [
+      {
+        "title": "Parse complete input",
+        "detail": "3 segments"
+      },
+      {
+        "title": "Generate silent audio",
+        "detail": "Offline stub timings"
+      },
+      {
+        "title": "Compose scenes",
+        "detail": "3 cues / 6 PNG scenes"
+      },
+      {
+        "title": "Encode and inspect",
+        "detail": "1920 x 1080 / 30 fps"
+      }
+    ],
+    "result": "The full offline path produces an H.264 MP4, cover and SRT with silent stub audio."
+  },
+  "integrations": {
+    "title": "ZhiCast / supported routes",
+    "items": [
+      {
+        "title": "Markdown",
+        "detail": "Headings / paragraphs / quotes"
+      },
+      {
+        "title": "Edge TTS",
+        "detail": "Network speech provider"
+      },
+      {
+        "title": "Silent stub",
+        "detail": "Offline timing and render preview"
+      },
+      {
+        "title": "Pillow / ffmpeg",
+        "detail": "Scene drawing and encoding"
+      },
+      {
+        "title": "MP4 / PNG / SRT",
+        "detail": "Video / cover / subtitles"
+      }
+    ]
+  }
+}

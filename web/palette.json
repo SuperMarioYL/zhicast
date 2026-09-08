@@ -1,0 +1,38 @@
+{
+  "mode": "auto",
+  "id": "56e66e-6ae7c1-bbf6ac-5c6ec5f946c0",
+  "identity": "https://github.com/supermarioyl/zhicast",
+  "primary": "#56e66e",
+  "secondary": "#6ae7c1",
+  "highlight": "#bbf6ac",
+  "dark": {
+    "bg": "#050c0e",
+    "panel": "#0c1719",
+    "code": "#0a1715",
+    "ink": "#f1fdee",
+    "muted": "#95b9ac",
+    "line": "#173c23",
+    "primary": "#56e66e",
+    "secondary": "#6ae7c1",
+    "highlight": "#bbf6ac",
+    "accent": "#56e66e",
+    "buttonStart": "#328640",
+    "buttonEnd": "#3c836e",
+    "buttonText": "#ffffff"
+  },
+  "light": {
+    "bg": "#f9fefa",
+    "panel": "#f7fef8",
+    "code": "#f3fdf5",
+    "ink": "#132a1f",
+    "muted": "#557b70",
+    "line": "#cbf7d3",
+    "primary": "#31833f",
+    "secondary": "#3b7f6b",
+    "highlight": "#5e7b56",
+    "accent": "#31833f",
+    "buttonStart": "#328640",
+    "buttonEnd": "#3c836e",
+    "buttonText": "#ffffff"
+  }
+}

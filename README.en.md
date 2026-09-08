@@ -1,156 +1,123 @@
-<div align="right"><sub><b>English</b>&nbsp;&nbsp;⇄&nbsp;&nbsp;<a href="./README.md">简体中文</a></sub></div>
+**English** | [简体中文](README.md)
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./assets/hero-dark.svg">
-  <source media="(prefers-color-scheme: light)" srcset="./assets/hero-light.svg">
-  <img src="./assets/hero-light.svg" width="880" alt="ZhiCast — script to 知识区 video">
+  <source media="(max-width: 640px) and (prefers-color-scheme: dark)" srcset="assets/presentation/hero-mobile-dark.svg">
+  <source media="(max-width: 640px)" srcset="assets/presentation/hero-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/presentation/hero-dark.svg">
+  <img src="assets/presentation/hero-light.svg" width="1000" alt="Convert headings, narration and quotes into audio, subtitles and scene cards, producing MP4, cover and SRT files.">
 </picture>
 
-<p align="center"><sub>ZhiCast is the open-source tool that brings agent-driven script-to-video to the B站 知识区 16:9 landscape format.</sub></p>
+**Convert headings, narration and quotes into audio, subtitles and scene cards, producing MP4, cover and SRT files.**
 
-<p align="center">
-  <a href="./LICENSE"><img src="https://img.shields.io/github/license/SuperMarioYL/zhicast?color=blue" alt="license"></a>
-  <a href="https://github.com/SuperMarioYL/zhicast/releases"><img src="https://img.shields.io/github/v/release/SuperMarioYL/zhicast?color=blue" alt="release"></a>
-  <a href="https://github.com/SuperMarioYL/zhicast/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/SuperMarioYL/zhicast/ci.yml?branch=main&label=ci" alt="ci"></a>
-  <img src="https://img.shields.io/badge/python-3.12-3776AB" alt="python">
-  <img src="https://img.shields.io/badge/launch-Show%20HN-ff6155" alt="Show HN">
-  <img src="https://img.shields.io/badge/built%20for-Agent-5E5CE6" alt="Agent">
-</p>
+`v0.1.0` · `Python 3.12+ / ffmpeg` · [MIT](LICENSE)
 
-**Paste a markdown script, get a B站 知识区 16:9 video with TTS narration, burned-in subtitles and 引用 callouts — no timeline, no Coding Agent.**
+[Website](https://zhicast.lei6393.com) · [Demo record](docs/demo-results.json)
 
----
+## Why use it
 
-## Why now
+Video drafts repeat the work of arranging title cards, quote cards and subtitles. ZhiCast uses a small Markdown convention to connect parsing, audio timing, subtitles and frames. Authors remain responsible for checking content, pronunciation, pacing and the actual published presentation.
 
-ZhiCast lands the agent-driven script-to-video capability — proven by [OpenMontage](https://github.com/calesthio/OpenMontage) (45K★, "agentic video production system") and [hyperframes](https://github.com/heygen-com/hyperframes) (39K★, "Write HTML. Render video. Built for agents") — on the B站 知识区 surface, without the Coding Agent lock-in those tools require (the CLI/agent workflow that projects like [headroomlabs-ai/headroom](https://github.com/headroomlabs-ai/headroom) sit inside). The same agent-editable-video pain already surfaced on Show HN ([OpenEdit](https://github.com/veedstudio/open-edit), where [@luca-ctx](https://github.com/luca-ctx) and similar posters engaged); ZhiCast launches there too, but takes plain markdown instead of HTML, and encodes 知识区 format rules (字幕安全区 / 引用标注 / 弹幕节奏 / hook→argument→summary pacing) that a generic Agent platform like [langgenius/dify](https://github.com/langgenius/dify) structurally will not. A non-technical UP主 pastes a script and gets a shippable 16:9 video.
-
-<h2><img src="https://api.iconify.design/tabler:topology-star-3.svg?color=%230071E3&width=24" height="22" align="absmiddle" alt=""> Architecture</h2>
+## Architecture
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./assets/atlas-dark.svg">
-  <source media="(prefers-color-scheme: light)" srcset="./assets/atlas-light.svg">
-  <img src="./assets/atlas-light.svg" width="880" alt="ZhiCast architecture: script→parse→tts→subtitle+overlay→render→MP4">
+  <source media="(max-width: 640px) and (prefers-color-scheme: dark)" srcset="assets/presentation/architecture-mobile-dark.svg">
+  <source media="(max-width: 640px)" srcset="assets/presentation/architecture-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/presentation/architecture-dark.svg">
+  <img src="assets/presentation/architecture-light.svg" width="1000" alt="parse builds ZhiScript; tts fills segment timing and audio; subtitle creates SRT cues; overlay draws cards, subtitles and covers with Pillow; render calls ffmpeg to compose video. CLI and local Web share this pipeline. Subtitles are drawn into PNG scenes before encoding, without libass.">
 </picture>
 
-A single Python process, no microservices. The CLI and the web UI reuse the same `parse → tts → subtitle → overlay → render` chain. Subtitle safe-area and 引用/section overlays are rendered to PNG frames by Pillow and sequenced by ffmpeg, so the pipeline runs even on a minimal ffmpeg build without libass.
+parse builds ZhiScript; tts fills segment timing and audio; subtitle creates SRT cues; overlay draws cards, subtitles and covers with Pillow; render calls ffmpeg to compose video. CLI and local Web share this pipeline. Subtitles are drawn into PNG scenes before encoding, without libass.
 
-<h2><img src="https://api.iconify.design/tabler:download.svg?color=%230071E3&width=24" height="22" align="absmiddle" alt=""> Install</h2>
+Source entry points: [zhicast/cli.py](zhicast/cli.py) · [zhicast/parse.py](zhicast/parse.py) · [zhicast/tts.py](zhicast/tts.py) · [zhicast/model.py](zhicast/model.py) · [zhicast/subtitle.py](zhicast/subtitle.py) · [zhicast/overlay.py](zhicast/overlay.py) · [zhicast/render.py](zhicast/render.py) · [zhicast/web.py](zhicast/web.py)
 
-Requires Python 3.12+ and ffmpeg (the `overlay` filter is enough; subtitles are pre-burned into PNG frames, so libass is not required).
+## Install
 
-```bash
-# macOS
-brew install ffmpeg
-# Debian/Ubuntu
-sudo apt install ffmpeg
-
-pip install zhicast
-```
-
-<h2><img src="https://api.iconify.design/tabler:rocket.svg?color=%230071E3&width=24" height="22" align="absmiddle" alt=""> Quickstart</h2>
+Requires Python 3.12+, uv, ffmpeg/ffprobe, libx264/AAC encoders and a CJK font. On macOS use brew install ffmpeg; on Debian/Ubuntu install ffmpeg and fonts-noto-cjk. Web forms currently also require the separate python-multipart install shown below.
 
 ```bash
-git clone https://github.com/SuperMarioYL/zhicast.git && cd zhicast
-pip install -e ".[dev]"
-zhicast build examples/sample_script.md -o out/ --tts-provider stub
+git clone https://github.com/SuperMarioYL/zhicast.git
+cd zhicast
+uv venv --python 3.12
+uv pip install --python .venv/bin/python -e .
+# Local Web form support:
+uv pip install --python .venv/bin/python python-multipart
 ```
 
-`--tts-provider stub` uses an offline silent engine so the whole pipeline runs without network. Swap to the default `edge` (needs network) for real TTS narration.
+## Quickstart
 
-<details><summary>Sample output</summary>
-
-```
-[1/6] parse script: examples/sample_script.md
-      title='为什么大模型记不住你三句话前说过的话' segments=9
-[2/6] tts (stub, voice=zh-CN-XiaoxiaoNeural)
-      total=18.4s
-[3/6] subtitle plan (字幕安全区)
-      cues=9 srt=video.srt
-[4/6] overlay scenes + cover
-      scenes=18 cover=cover.png
-[5/6] render video (ffmpeg)
-      mp4=video.mp4
-[6/6] done
-output: out/video.mp4
-```
-</details>
-
-<h2><img src="https://api.iconify.design/tabler:terminal-2.svg?color=%230071E3&width=24" height="22" align="absmiddle" alt=""> Usage</h2>
-
-One-command build (default edge-tts, real narration):
+The example runs parsing, silent audio, subtitles, Pillow scenes and ffmpeg encoding, then reads video dimensions and frame rate with ffprobe. It uses no real speech, upload or platform validation; temporary media is removed after inspection.
 
 ```bash
-zhicast build script.md -o out/
+.venv/bin/python examples/presentation-demo.py
 ```
 
-Switch voice or preview offline:
+Complete inputs and execution steps are included in the commands above and the [demo record](docs/demo-results.json).
+
+## Usage
 
 ```bash
-zhicast build script.md -o out/ --tts-provider edge --voice zh-CN-YunxiNeural
-zhicast build script.md -o out/ --tts-provider stub          # offline, no network
+.venv/bin/zhicast build examples/presentation-script.md -o out/ --tts-provider stub
+.venv/bin/zhicast serve --port 8000 --tts-provider stub
+```
+For real speech, change build’s --tts-provider to edge and choose an available --voice. `# Title` sets the cover, `## Section` creates a title segment, `> Quote (source)` creates a quote card and paragraphs become narration. build retains out/video.mp4, cover.png, video.srt and manifest.json.
+
+## Recorded demo
+
+<picture>
+  <source media="(max-width: 640px) and (prefers-color-scheme: dark)" srcset="assets/presentation/process-mobile-dark.svg">
+  <source media="(max-width: 640px)" srcset="assets/presentation/process-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/presentation/process-dark.svg">
+  <img src="assets/presentation/process-light.svg" width="1000" alt="The example runs parsing, silent audio, subtitles, Pillow scenes and ffmpeg encoding, then reads video dimensions and frame rate with ffprobe. It uses no real speech, upload or platform validation; temporary media is removed after inspection.">
+</picture>
+
+### Render and inspect video
+
+Produces 3 segments, 3 subtitle cues, 6 scene images and a 1920×1080, 30fps H.264 video.
+
+```text
+$ .venv/bin/python examples/presentation-demo.py
+{
+  "tts_provider": "stub (silent audio)",
+  "segments": 3,
+  "subtitle_cues": 3,
+  "scene_images": 6,
+  "cover_exists": true,
+  "srt_exists": true,
+  "video_stream": {
+    "codec_name": "h264",
+    "width": 1920,
+    "height": 1080,
+    "r_frame_rate": "30/1"
+  }
+}
 ```
 
-Local web page (paste script → generate → download MP4 + cover + SRT):
+## Capabilities and integration
 
-```bash
-zhicast serve --port 8000          # http://127.0.0.1:8000
-```
+<picture>
+  <source media="(max-width: 640px) and (prefers-color-scheme: dark)" srcset="assets/presentation/integrations-mobile-dark.svg">
+  <source media="(max-width: 640px)" srcset="assets/presentation/integrations-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="assets/presentation/integrations-dark.svg">
+  <img src="assets/presentation/integrations-light.svg" width="1000" alt="The local CLI generates an output directory; the Web UI accepts pasted scripts and offers downloads. edge is an implemented network TTS path and stub generates silence. doubao and qwen are selectable names but currently raise not-implemented errors.">
+</picture>
 
-Script conventions: `# title` → cover title; `## section` → section title card; `> quote (source)` → 引用 callout card; plain paragraphs → TTS narration. See [`examples/sample_script.md`](./examples/sample_script.md).
+The local CLI generates an output directory; the Web UI accepts pasted scripts and offers downloads. edge is an implemented network TTS path and stub generates silence. doubao and qwen are selectable names but currently raise not-implemented errors.
 
-<h2><img src="https://api.iconify.design/tabler:photo.svg?color=%230071E3&width=24" height="22" align="absmiddle" alt=""> Demo</h2>
 
-![demo](assets/demo.gif)
 
-The full path from a markdown script to a 16:9 知识区 video: paste script → TTS narration + subtitle-safe-area burn-in + 引用 callout cards → output MP4 and cover. Re-render via [`docs/demo.tape`](./docs/demo.tape) and the [demo workflow](./.github/workflows/demo.yml).
+## Configuration
 
-<h2><img src="https://api.iconify.design/tabler:adjustments.svg?color=%230071E3&width=24" height="22" align="absmiddle" alt=""> Configuration</h2>
+The default edge voice is zh-CN-XiaoxiaoNeural and --out selects the directory. RenderSpec defaults to 1920×1080, 30fps, CRF 23, libx264, yuv420p and AAC. Subtitle policy uses 28 display-width units per line and up to two lines; this is a project layout convention, not platform certification. If word timing is unavailable, edge timing is distributed across sentence windows and needs review.
 
-| Option | Default | Meaning |
-|---|---|---|
-| `--tts-provider` | `edge` | TTS engine: `edge` (online, default) / `stub` (offline silent) / `doubao` / `qwen` (v0.2+, CN default) |
-| `--voice` | `zh-CN-XiaoxiaoNeural` | edge-tts voice id (e.g. `zh-CN-YunxiNeural`, male) |
-| `--out` | `out/` | output dir (holds `video.mp4` / `cover.png` / `video.srt` / `manifest.json`) |
-| subtitle safe area | 1920×1080 bottom | ≤14 CJK chars/line, ≤2 lines, bottom safe area, 弹幕-rhythm gaps |
-| render params | 30fps · crf 23 · yuv420p · aac 192k | see `RenderSpec` (`zhicast/model.py`) |
+## Roadmap and scope
 
-<h2><img src="https://api.iconify.design/tabler:map-2.svg?color=%230071E3&width=24" height="22" align="absmiddle" alt=""> Roadmap</h2>
+Section/quote cards, covers, local Web and offline rendering are implemented. Doubao/Qwen TTS, template editing, batch series and cloud rendering remain future work.
 
-- [x] **m1 build pipeline** — markdown → edge-tts (sentence-level timestamps) → subtitle-safe-area SRT → Pillow frames + cover → ffmpeg → 16:9 MP4, end-to-end via `zhicast build`
-- [ ] **m2 知识区 format surface** — 引用 callout cards + section title cards + cover templates + local web page (paste→generate→download); the demonstrable MVP
-- [ ] **m3 launch readiness** — 30s demo GIF + 豆包 TTS provider (CN default) + Gitee mirror; Show HN / V2EX-ready
-- [ ] **v0.2 hosted cloud-render tier** — zero-install, 豆包 high-quality voices, premium cover templates, batch series rendering
+- stub produces silence and synthetic timestamps; it cannot establish real speech or subtitle-alignment quality.
+- Review long sentences, font coverage and subtitle grouping manually. No Bilibili upload or distribution-effect validation was performed.
 
-<h2><img src="https://api.iconify.design/tabler:credit-card.svg?color=%230071E3&width=24" height="22" align="absmiddle" alt=""> Pricing</h2>
+![Terminal recording](assets/demo.gif) · [Recording script](docs/demo.tape)
 
-The local engine is fully open-source, free, and commercially usable — but you have to install Python and ffmpeg yourself, which most non-technical UP主 will not.
+## License
 
-The **hosted cloud-render tier (v0.2, paid)** fixes that: paste a script in the browser → cloud render (bundled ffmpeg + 豆包 high-quality voices + curated cover templates + batch) → download a finished video, zero local install. Price **¥29/month** (~10 episodes/mo) or a **¥1–2/episode** credit pack. This is the "here's my credit card" path for small studio UP主 teams (multiple 5–15 min episodes/week) — high volume, and the 3–6h/episode edit cost is their sharpest pain. The local OSS engine ships first to prove demand; the first paying customer triggers v0.1 → v0.2.
-
-<h2><img src="https://api.iconify.design/tabler:arrows-exchange.svg?color=%230071E3&width=24" height="22" align="absmiddle" alt=""> vs. a generic Agent platform</h2>
-
-Positioning vs. [langgenius/dify](https://github.com/langgenius/dify):
-
-| Axis | ZhiCast | dify (generic Agent platform) |
-|---|---|---|
-| Target user | B站 知识区 UP主 (non-technical) | developers / engineering teams |
-| Input | paste markdown script | API / workflow orchestration |
-| Output | 16:9 知识区 MP4 + cover + SRT | generic agent apps |
-| TTS timestamps → subtitles | ✓ (edge-tts sentence-level, no forced-alignment) | — |
-| 知识区 format rules | ✓ (字幕安全区 / 引用标注 / 弹幕 rhythm) | — |
-| Ecosystem / extensibility | ✗ (single-purpose) | ✓ (rich agent ecosystem, plugins) |
-
-dify beats ZhiCast handily on ecosystem breadth — it is a general agent platform; ZhiCast is a single-purpose vertical video tool. ZhiCast does not compete head-on; it lands the agent-driven script-to-video idea that dify represents onto the B站 知识区 format surface that dify structurally will not cover.
-
-<h2><img src="https://api.iconify.design/tabler:share-2.svg?color=%230071E3&width=24" height="22" align="absmiddle" alt=""> Share this</h2>
-
-```
-ZhiCast — the script-to-video tool for B站 知识区. Built for the Agent era, without a Coding Agent. Paste markdown → TTS narration + aligned subtitles + 引用 cards → 16:9 MP4. https://github.com/SuperMarioYL/zhicast
-```
-
-<h2><img src="https://api.iconify.design/tabler:license.svg?color=%230071E3&width=24" height="22" align="absmiddle" alt=""> License</h2>
-
-MIT, see [LICENSE](./LICENSE). File issues or PRs at [issues](https://github.com/SuperMarioYL/zhicast/issues).
-
-<p align="center"><sub><a href="./LICENSE">MIT</a> © 2026 SuperMarioYL</sub></p>
+[MIT](LICENSE)

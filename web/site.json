@@ -1,75 +1,236 @@
 {
-  "schema": 1,
-  "name": "zhicast",
+  "schema": 3,
+  "name": "ZhiCast",
   "github": "https://github.com/SuperMarioYL/zhicast",
   "host": "zhicast.lei6393.com",
-  "lang": { "primary": "zh", "toggle": true },
-  "accent": ["#e8738e"],
+  "palette": "auto",
+  "lang": {
+    "primary": "zh",
+    "toggle": true
+  },
+  "meta": {
+    "visual_profile": "neon-particle",
+    "content_version": "0.1.0",
+    "demo_source": "docs/demo-results.json"
+  },
   "hero": {
     "eyebrow": {
-      "zh": "贴脚本 · 一键出片 · 免剪辑",
-      "en": "Paste a script · One-click video · No editing"
+      "zh": "将标题、正文和引用转换成配音、字幕与卡片画面，输出 MP4、封面和 SRT。",
+      "en": "Convert headings, narration and quotes into audio, subtitles and scene cards, producing MP4, cover and SRT files."
     },
     "headline": {
-      "zh": "写完脚本，就是成片\n一条命令直发知识区",
-      "en": "Script done, video ready\nOne command to a shippable 知识区 video"
+      "zh": "从 Markdown 脚本生成横屏视频初稿。",
+      "en": "Turn a Markdown script into a video draft."
     },
     "sub": {
-      "zh": "贴一段 markdown 脚本，自动配旁白、烧字幕、排引用卡片，直接出 16:9 成片和封面。",
-      "en": "Paste a markdown script — narration, burned-in subtitles and quote cards are laid out for you, and a 16:9 video plus cover comes out."
+      "zh": "将标题、正文和引用转换成配音、字幕与卡片画面，输出 MP4、封面和 SRT。",
+      "en": "Convert headings, narration and quotes into audio, subtitles and scene cards, producing MP4, cover and SRT files."
     },
-    "command": "zhicast build script.md -o out/",
-    "cta": { "zh": "开始使用", "en": "Get started" },
-    "ctaGithub": { "zh": "GitHub 仓库", "en": "GitHub repo" },
-    "scroll": { "zh": "往下看", "en": "Scroll" }
+    "href": "#quickstart",
+    "cta": {
+      "zh": "运行示例",
+      "en": "Run the example"
+    },
+    "ctaGithub": {
+      "zh": "查看源码",
+      "en": "View source"
+    }
+  },
+  "scene": {
+    "kind": "neon-graph",
+    "caption": {
+      "zh": "图示展示组件关系；实际输出见下方示例。",
+      "en": "An illustrative component scene; recorded output appears below."
+    },
+    "fallback": "/assets/presentation/scene-dark.svg",
+    "fallbackLight": "/assets/presentation/scene-light.svg"
   },
   "advantages": [
     {
-      "title": { "zh": "一条命令，脚本变成片", "en": "One command, script to video" },
-      "body": {
-        "zh": "贴上脚本，旁白、字幕、引用卡片、封面一次跑完，几分钟拿到能直发的 16:9 成片——不用打开剪辑软件。",
-        "en": "Paste your script and narration, subtitles, quote cards and cover all render in one pass — a shippable 16:9 video in minutes, no editor open."
+      "title": {
+        "zh": "脚本直接组织",
+        "en": "Organize from the script"
       },
-      "chips": ["› 一条命令端到端", "› 出 MP4 + 封面 + 字幕"]
+      "body": {
+        "zh": "Markdown 结构映射到片段与卡片。",
+        "en": "Markdown structure maps to segments and cards."
+      }
     },
     {
-      "title": { "zh": "字幕自己会对齐", "en": "Subtitles that align themselves" },
-      "body": {
-        "zh": "字幕跟着旁白的时间戳自动排好，每行不超 14 字、压在底部安全区，给弹幕留出节奏——不用手贴时间轴。",
-        "en": "Subtitles lay out from the narration's own timestamps — ≤14 characters a line, pinned to the bottom safe area, leaving room for 弹幕 rhythm. No manual timeline sync."
+      "title": {
+        "zh": "保留输出文件",
+        "en": "Keep ordinary outputs"
       },
-      "chips": ["› 时间戳直出，免对齐", "› 底部安全区 · 留弹幕位"]
+      "body": {
+        "zh": "MP4、PNG 与 SRT 可以继续编辑。",
+        "en": "MP4, PNG and SRT can be edited further."
+      }
     },
     {
-      "title": { "zh": "知识区格式，开箱即用", "en": "Knowledge-area format, built in" },
-      "body": {
-        "zh": "引用标注卡、章节标题卡、16:9 封面都从脚本结构里长出来——你只管写正文，知识区的样子它都替你排好。",
-        "en": "Quote callout cards, section title cards and a 16:9 cover all grow out of your script's own structure — you write the body, the knowledge-area look is laid out for you."
+      "title": {
+        "zh": "先看离线初稿",
+        "en": "Preview offline first"
       },
-      "chips": ["› 引用卡 · 章节卡 · 封面", "› 从脚本结构直出"]
-    },
-    {
-      "title": { "zh": "本地预览页，贴上就出", "en": "A local preview page, paste and go" },
       "body": {
-        "zh": "本地起个网页，贴上脚本点生成，成片直接在页面上播——旁白、字幕、卡片都在，满意就下载。",
-        "en": "Run a local page, paste a script, click generate — the finished video plays right on the page, narration and subtitles and cards all there. Download when it looks right."
-      },
-      "chips": ["› 本地网页 · 贴脚本即出", "› 成片页内直接播"]
+        "zh": "静音 stub 可检查格式与渲染。",
+        "en": "The silent stub exercises layout and rendering."
+      }
     }
   ],
-  "scene": { "kind": "particle-field" },
-  "cta": {
-    "headline": { "zh": "脚本写完了？该出片了。", "en": "Script's done? Time to ship the video." },
-    "sub": {
-      "zh": "开源、免费、可商用。一条命令装好，引擎跑在你自己机器上。",
-      "en": "Open-source, free, commercially usable. Install in one command; the engine runs on your own machine."
+  "story": {
+    "intro": {
+      "title": {
+        "zh": "解决什么问题",
+        "en": "The task it solves"
+      },
+      "body": {
+        "zh": "为讲解稿制作初稿时，标题卡、引用卡和字幕重复排版会占用不少时间。ZhiCast 约定一小套 Markdown 结构，把脚本解析、音频时序、字幕与画面串起来。作者仍负责检查内容、发音、节奏和发布后的实际呈现。",
+        "en": "Video drafts repeat the work of arranging title cards, quote cards and subtitles. ZhiCast uses a small Markdown convention to connect parsing, audio timing, subtitles and frames. Authors remain responsible for checking content, pronunciation, pacing and the actual published presentation."
+      }
     },
-    "button": { "zh": "开始使用", "en": "Get started" }
+    "sections": [
+      {
+        "title": {
+          "zh": "从输入到结果",
+          "en": "From input to result"
+        },
+        "body": {
+          "zh": "示例跑完整解析、静音音频、字幕、Pillow 场景与 ffmpeg 编码，并通过 ffprobe 读取视频尺寸和帧率。没有真实配音、上传或平台验收；临时成片在检查后清理。",
+          "en": "The example runs parsing, silent audio, subtitles, Pillow scenes and ffmpeg encoding, then reads video dimensions and frame rate with ffprobe. It uses no real speech, upload or platform validation; temporary media is removed after inspection."
+        },
+        "image": {
+          "light": "/assets/presentation/process-light.svg",
+          "dark": "/assets/presentation/process-dark.svg",
+          "alt": {
+            "zh": "示例跑完整解析、静音音频、字幕、Pillow 场景与 ffmpeg 编码，并通过 ffprobe 读取视频尺寸和帧率。没有真实配音、上传或平台验收；临时成片在检查后清理。",
+            "en": "The example runs parsing, silent audio, subtitles, Pillow scenes and ffmpeg encoding, then reads video dimensions and frame rate with ffprobe. It uses no real speech, upload or platform validation; temporary media is removed after inspection."
+          }
+        }
+      },
+      {
+        "title": {
+          "zh": "工作原理",
+          "en": "How it works"
+        },
+        "body": {
+          "zh": "parse 构建 ZhiScript，tts 填写片段时间与音频，subtitle 生成 SRT cue，overlay 用 Pillow 画卡片、字幕与封面，render 调用 ffmpeg 合成视频。CLI 与本地 Web 使用同一条处理路径，字幕绘制进 PNG 场景后编码，无需 libass。",
+          "en": "parse builds ZhiScript; tts fills segment timing and audio; subtitle creates SRT cues; overlay draws cards, subtitles and covers with Pillow; render calls ffmpeg to compose video. CLI and local Web share this pipeline. Subtitles are drawn into PNG scenes before encoding, without libass."
+        },
+        "image": {
+          "light": "/assets/presentation/architecture-light.svg",
+          "dark": "/assets/presentation/architecture-dark.svg",
+          "alt": {
+            "zh": "parse 构建 ZhiScript，tts 填写片段时间与音频，subtitle 生成 SRT cue，overlay 用 Pillow 画卡片、字幕与封面，render 调用 ffmpeg 合成视频。CLI 与本地 Web 使用同一条处理路径，字幕绘制进 PNG 场景后编码，无需 libass。",
+            "en": "parse builds ZhiScript; tts fills segment timing and audio; subtitle creates SRT cues; overlay draws cards, subtitles and covers with Pillow; render calls ffmpeg to compose video. CLI and local Web share this pipeline. Subtitles are drawn into PNG scenes before encoding, without libass."
+          }
+        }
+      },
+      {
+        "title": {
+          "zh": "能力与接入",
+          "en": "Capabilities and integration"
+        },
+        "body": {
+          "zh": "本地 CLI 可生成输出目录，Web 可粘贴脚本并下载结果。edge 是已实现的网络 TTS 路径；stub 生成静音。doubao 和 qwen 虽可通过参数选择，当前会明确报未实现。",
+          "en": "The local CLI generates an output directory; the Web UI accepts pasted scripts and offers downloads. edge is an implemented network TTS path and stub generates silence. doubao and qwen are selectable names but currently raise not-implemented errors."
+        },
+        "image": {
+          "light": "/assets/presentation/integrations-light.svg",
+          "dark": "/assets/presentation/integrations-dark.svg",
+          "alt": {
+            "zh": "本地 CLI 可生成输出目录，Web 可粘贴脚本并下载结果。edge 是已实现的网络 TTS 路径；stub 生成静音。doubao 和 qwen 虽可通过参数选择，当前会明确报未实现。",
+            "en": "The local CLI generates an output directory; the Web UI accepts pasted scripts and offers downloads. edge is an implemented network TTS path and stub generates silence. doubao and qwen are selectable names but currently raise not-implemented errors."
+          }
+        }
+      }
+    ],
+    "details": [
+      {
+        "title": {
+          "zh": "使用方式",
+          "en": "Usage"
+        },
+        "body": {
+          "zh": "本地 CLI 可生成输出目录，Web 可粘贴脚本并下载结果。edge 是已实现的网络 TTS 路径；stub 生成静音。doubao 和 qwen 虽可通过参数选择，当前会明确报未实现。",
+          "en": "The local CLI generates an output directory; the Web UI accepts pasted scripts and offers downloads. edge is an implemented network TTS path and stub generates silence. doubao and qwen are selectable names but currently raise not-implemented errors."
+        }
+      },
+      {
+        "title": {
+          "zh": "配置",
+          "en": "Configuration"
+        },
+        "body": {
+          "zh": "默认 edge 音色为 zh-CN-XiaoxiaoNeural；--out 控制目录。RenderSpec 默认 1920×1080、30fps、CRF 23、libx264、yuv420p 与 AAC。字幕策略使用 28 个显示宽度单位/行、最多两行；它是项目排版约定，不是平台认证。edge 缺少词级时序时会在句级窗口内均匀分配，时序需人工回看。",
+          "en": "The default edge voice is zh-CN-XiaoxiaoNeural and --out selects the directory. RenderSpec defaults to 1920×1080, 30fps, CRF 23, libx264, yuv420p and AAC. Subtitle policy uses 28 display-width units per line and up to two lines; this is a project layout convention, not platform certification. If word timing is unavailable, edge timing is distributed across sentence windows and needs review."
+        }
+      }
+    ]
   },
-  "footer": {
-    "tag": {
-      "zh": "ZhiCast —— 给 B站知识区 UP主 的 script-to-video 工具 · MIT 开源",
-      "en": "ZhiCast — the script-to-video tool for B站 知识区 UP主 · MIT open-source"
+  "demo": {
+    "title": {
+      "zh": "实际运行结果",
+      "en": "Actual demo output"
+    },
+    "note": {
+      "zh": "示例跑完整解析、静音音频、字幕、Pillow 场景与 ffmpeg 编码，并通过 ffprobe 读取视频尺寸和帧率。没有真实配音、上传或平台验收；临时成片在检查后清理。",
+      "en": "The example runs parsing, silent audio, subtitles, Pillow scenes and ffmpeg encoding, then reads video dimensions and frame rate with ffprobe. It uses no real speech, upload or platform validation; temporary media is removed after inspection."
+    },
+    "source": "https://github.com/SuperMarioYL/zhicast/blob/main/docs/demo-results.json",
+    "steps": [
+      {
+        "label": {
+          "zh": "生成并检查视频",
+          "en": "Render and inspect video"
+        },
+        "body": {
+          "zh": "得到 3 段、3 条字幕、6 张场景图以及 1920×1080、30fps 的 H.264 视频。",
+          "en": "Produces 3 segments, 3 subtitle cues, 6 scene images and a 1920×1080, 30fps H.264 video."
+        },
+        "command": ".venv/bin/python examples/presentation-demo.py",
+        "output": "{\n  \"tts_provider\": \"stub (silent audio)\",\n  \"segments\": 3,\n  \"subtitle_cues\": 3,\n  \"scene_images\": 6,\n  \"cover_exists\": true,\n  \"srt_exists\": true,\n  \"video_stream\": {\n    \"codec_name\": \"h264\",\n    \"width\": 1920,\n    \"height\": 1080,\n    \"r_frame_rate\": \"30/1\"\n  }\n}\n",
+        "image": "/assets/presentation/demo-0-light.svg",
+        "imageDark": "/assets/presentation/demo-0-dark.svg"
+      }
+    ]
+  },
+  "quickstart": {
+    "title": {
+      "zh": "从完整输入开始",
+      "en": "Start with complete input"
+    },
+    "body": {
+      "zh": "需要 Python 3.12+、uv、ffmpeg/ffprobe、可用的 libx264/AAC 编码器和中文字体。macOS 可运行 brew install ffmpeg；Debian/Ubuntu 可安装 ffmpeg 与 fonts-noto-cjk。Web 表单当前还需单独安装 python-multipart，如下。",
+      "en": "Requires Python 3.12+, uv, ffmpeg/ffprobe, libx264/AAC encoders and a CJK font. On macOS use brew install ffmpeg; on Debian/Ubuntu install ffmpeg and fonts-noto-cjk. Web forms currently also require the separate python-multipart install shown below."
+    },
+    "steps": [
+      {
+        "title": {
+          "zh": "安装",
+          "en": "Install"
+        },
+        "code": "git clone https://github.com/SuperMarioYL/zhicast.git\ncd zhicast\nuv venv --python 3.12\nuv pip install --python .venv/bin/python -e .\n# Local Web form support:\nuv pip install --python .venv/bin/python python-multipart"
+      },
+      {
+        "title": {
+          "zh": "运行自带示例",
+          "en": "Run the supplied example"
+        },
+        "code": ".venv/bin/python examples/presentation-demo.py"
+      }
+    ]
+  },
+  "limitations": [
+    {
+      "zh": "stub 输出静音并使用合成时间戳，不能据此评价真实配音或字幕对齐质量。",
+      "en": "stub produces silence and synthetic timestamps; it cannot establish real speech or subtitle-alignment quality."
+    },
+    {
+      "zh": "长句、字体覆盖和字幕分组需人工检查；没有执行 B站上传或推荐效果验证。",
+      "en": "Review long sentences, font coverage and subtitle grouping manually. No Bilibili upload or distribution-effect validation was performed."
     }
+  ],
+  "footer": {
+    "tag": "0.1.0 · Python 3.12+ / ffmpeg · MIT"
   }
 }
