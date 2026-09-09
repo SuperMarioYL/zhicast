@@ -9,7 +9,7 @@
 
 **将标题、正文和引用转换成配音、字幕与卡片画面，输出 MP4、封面和 SRT。**
 
-`v0.1.0` · `Python 3.12+ / ffmpeg` · [MIT](LICENSE)
+`v0.2.0` · `Python 3.12+ / ffmpeg` · [MIT](LICENSE)
 
 [Website](https://zhicast.lei6393.com) · [Demo record](docs/demo-results.json)
 

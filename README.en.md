@@ -9,7 +9,7 @@
 
 **Convert headings, narration and quotes into audio, subtitles and scene cards, producing MP4, cover and SRT files.**
 
-`v0.1.0` · `Python 3.12+ / ffmpeg` · [MIT](LICENSE)
+`v0.2.0` · `Python 3.12+ / ffmpeg` · [MIT](LICENSE)
 
 [Website](https://zhicast.lei6393.com) · [Demo record](docs/demo-results.json)
 

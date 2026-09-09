@@ -1,6 +1,6 @@
 [project]
 name = "zhicast"
-version = "0.1.0"
+version = "0.2.0"
 description = "把B站知识区文字脚本转成16:9横屏知识视频的开源工具"
 readme = "README.md"
 license = "MIT"
@@ -50,7 +50,7 @@ build-backend = "hatchling.build"
 packages = ["zhicast"]
 
 [tool.hatch.build.targets.sdist]
-include = ["zhicast", "tests", "examples", "docs", "assets", "README.md", "README.en.md", "LICENSE", "VERSION"]
+include = ["zhicast", "tests", "examples", "docs", "assets", "README.md", "README.en.md", "CHANGELOG.md", "LICENSE", "VERSION"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

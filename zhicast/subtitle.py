@@ -47,8 +47,29 @@ def _join_words(words: list[str]) -> str:
     return "".join(words)
 
 
+def _split_wide_token(token: str) -> list[str]:
+    """Hard-split a token wider than one safe line. Any provider can emit a
+    token that already violates the line budget (e.g. a spaceless CJK run);
+    the safe-area rule must hold by construction, not by provider courtesy."""
+    if display_width(token) <= SAFE_LINE_UNITS:
+        return [token]
+    parts: list[str] = []
+    cur = ""
+    for ch in token:
+        if cur and display_width(cur + ch) > SAFE_LINE_UNITS:
+            parts.append(cur)
+            cur = ch
+        else:
+            cur += ch
+    if cur:
+        parts.append(cur)
+    return parts
+
+
 def _wrap_to_safe(words: list[str]) -> list[str]:
-    """Greedy wrap into ≤ SAFE_MAX_LINES lines, each ≤ SAFE_LINE_UNITS."""
+    """Greedy wrap into lines of ≤ SAFE_LINE_UNITS each; never drops text
+    (extra lines are the caller's cue-splitting signal, see build_subtitle_plan)."""
+    words = [part for w in words for part in _split_wide_token(w)]
     lines: list[list[str]] = []
     current: list[str] = []
     current_units = 0
@@ -59,14 +80,17 @@ def _wrap_to_safe(words: list[str]) -> list[str]:
             lines.append(current)
             current = [w]
             current_units = display_width(w)
-            if len(lines) >= SAFE_MAX_LINES:
-                break
-            continue
-        current.append(w)
-        current_units += w_units
-    if current and len(lines) < SAFE_MAX_LINES:
+        else:
+            current.append(w)
+            current_units += w_units
+    if current:
         lines.append(current)
     return [_join_words(line) for line in lines if line]
+
+
+def _fits_cue_budget(pending: list[str], word: str) -> bool:
+    """Would pending + word still wrap within SAFE_MAX_LINES lines?"""
+    return len(_wrap_to_safe([*pending, word])) <= SAFE_MAX_LINES
 
 
 def build_subtitle_plan(script: ZhiScript) -> list[SubtitleCue]:
@@ -108,6 +132,13 @@ def build_subtitle_plan(script: ZhiScript) -> list[SubtitleCue]:
             abs_end = abs_off + b.duration_ms
             # sentence-ish break: a long silence gap closes the current cue
             if pending_words and cue_start is not None and abs_off - cue_end > 350:
+                flush(cue_start, cue_end)
+                cue_start = None
+            # line budget: a cue holds at most SAFE_MAX_LINES wrapped lines —
+            # close it and let the word start the next cue instead of dropping it
+            if cue_start is not None and not _fits_cue_budget(
+                [w[2] for w in pending_words], b.text
+            ):
                 flush(cue_start, cue_end)
                 cue_start = None
             if cue_start is None:

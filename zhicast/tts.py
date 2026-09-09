@@ -11,9 +11,9 @@ timings anchored to the real TTS clock. If a future edge-tts release restores
 ``WordBoundary``, it is used verbatim.
 
 ``doubao`` / ``qwen`` are selectable behind ``--tts-provider`` but are **not**
-implemented in v0.1 — their TTS API shapes are unverified on this machine
-(``schema_unverified``), so we refuse cleanly rather than hard-claim a request
-shape that may be wrong. They land as the m3 国产 default upgrade.
+implemented — their TTS API shapes are unverified (``schema_unverified``), so
+we refuse cleanly rather than hard-claim a request shape that may be wrong.
+They land once the API shape is verified, as the 国产 default upgrade.
 
 A deterministic ``stub`` provider generates silent audio + synthetic word
 boundaries so the full pipeline (and the test suite) runs offline.
@@ -180,7 +180,11 @@ class StubTTSProvider(TTSProvider):
         self, text: str, *, out_path: Path, voice: str = DEFAULT_VOICE
     ) -> SynthesisResult:
         out_path.parent.mkdir(parents=True, exist_ok=True)
-        words = [w for w in text.split() if w] or [text]
+        # Same granularity as the edge SentenceBoundary fallback: ASCII word
+        # runs + individual CJK chars. Whitespace-splitting would turn a
+        # spaceless CJK sentence into one giant token that violates the
+        # 字幕安全区 line budget.
+        words = _tokenize(text) or [text]
         total_ms = self.LEAD_IN_MS + int(len(text) * self.PER_CHAR_MS)
         # silence envelope at 24kHz mono pcm_s16le
         sample_rate = 24000
@@ -209,11 +213,11 @@ class StubTTSProvider(TTSProvider):
 
 
 class _UnverifiedProvider(TTSProvider):
-    """Base for providers whose API shape is unverified in v0.1.
+    """Base for providers whose API shape is unverified.
 
     Selectable behind ``--tts-provider`` (the flag exists and validates), but
     synthesizing raises a clear error instead of guessing a request shape that
-    may be wrong. The m3 milestone wires the real 国产 TTS default.
+    may be wrong. The 国产 default lands once the API shape is verified.
     """
 
     name = "unverified-base"
@@ -226,10 +230,10 @@ class _UnverifiedProvider(TTSProvider):
         self, text: str, *, out_path: Path, voice: str = DEFAULT_VOICE
     ) -> SynthesisResult:
         raise NotImplementedError(
-            f"the '{self.name}' TTS provider is not implemented in v0.1 "
+            f"the '{self.name}' TTS provider is not implemented yet "
             f"({self._m3_note}); use --tts-provider edge (default) or stub "
-            "for offline runs. The provider flag is reserved so m3 can ship the "
-            "国产 default without breaking the CLI contract."
+            "for offline runs. The provider flag is reserved so the "
+            "国产 default can ship without breaking the CLI contract."
         )
 
 
@@ -255,14 +259,17 @@ def get_provider(name: str) -> TTSProvider:
 
 
 def _run_async(coro):
-    """Run an async synth call from sync context, reusing a loop if present."""
+    """Run an async synth call from sync context; refuse cleanly inside a
+    running event loop (asyncio.run would fail with its own confusing error
+    and leak the never-awaited coroutine)."""
     try:
-        loop = asyncio.get_event_loop()
-        if loop.is_running():  # we're already inside an event loop
-            raise RuntimeError("synthesize() must be awaited; called from sync inside a running loop")
+        asyncio.get_running_loop()
     except RuntimeError:
         return asyncio.run(coro)
-    return asyncio.run(coro)
+    coro.close()
+    raise RuntimeError(
+        "synthesize() must be awaited; called from sync inside a running loop"
+    )
 
 
 def synthesize_script(

@@ -115,6 +115,46 @@ def test_subtitle_plan_respects_safe_area():
         assert cue.end_ms - cue.start_ms >= 800
 
 
+def _long_sentence_script() -> ZhiScript:
+    """58 contiguous CJK chars, no >350ms boundary gap -> one narration run."""
+    long_sentence = "上下文窗口是模型一次能看到的全部内容它决定了模型的工作记忆上限超过窗口的对话内容就像被橡皮擦悄悄抹去一样无法再被参考"
+    b: list[WordBoundary] = []
+    cursor = 250
+    for ch in long_sentence:
+        b.append(WordBoundary(text=ch, offset_ms=cursor, duration_ms=200))
+        cursor += 200
+    seg = Segment(kind="narration", text=long_sentence, start_ms=0, end_ms=cursor, boundaries=b)
+    return ZhiScript(title="t", cover=CoverSpec(title="t"), segments=[seg])
+
+
+def test_subtitle_plan_no_text_loss_on_long_sentence():
+    # v0.2.0 fix: a cue that overflows the 2-line budget used to silently
+    # drop words; now it splits into more cues and keeps every char.
+    s = _long_sentence_script()
+    long_sentence = s.segments[0].text
+    cues = build_subtitle_plan(s)
+    assert len(cues) > 1  # budget-split, not one overflowing cue
+    joined = "".join(cue.text.replace("\n", "") for cue in cues)
+    assert long_sentence in joined.replace(" ", "")
+    for cue in cues:  # safe area still holds on every split cue
+        assert len(cue.lines) <= SAFE_MAX_LINES
+        for line in cue.lines:
+            assert display_width(line) <= 28
+
+
+def test_wrap_hard_splits_wide_tokens():
+    # v0.2.0 guard: a single token wider than one safe line (e.g. a spaceless
+    # CJK run from a provider) must be hard-split, never overflow a line.
+    from zhicast.subtitle import _wrap_to_safe
+
+    giant = "聊天时它常常忘记你三句话前说过的话"  # 17 CJK chars = 34 units
+    lines = _wrap_to_safe([giant])
+    assert lines
+    for line in lines:
+        assert display_width(line) <= 28
+    assert "".join(lines) == giant  # hard-split keeps every char
+
+
 def test_subtitle_plan_absolute_timing():
     s = _script_with_boundaries()
     seg = s.segments[0]
@@ -192,6 +232,78 @@ def test_doubao_qwen_flagged_not_implemented(tmp_path):
 def test_unknown_provider_raises():
     with pytest.raises(ValueError):
         get_provider("nonexistent-engine")
+
+
+def test_stub_tts_cjk_boundaries_granular(tmp_path):
+    # v0.2.0 fix: spaceless CJK used to become ONE giant token that violated
+    # the 字幕安全区 line budget; stub now tokenizes per CJK char like the
+    # edge SentenceBoundary fallback.
+    import asyncio
+
+    text = "你有没有发现和AI聊天时它常常忘记你三句话前说过的话"
+    result = asyncio.run(
+        StubTTSProvider().synthesize(text, out_path=tmp_path / "seg.wav", voice=DEFAULT_VOICE)
+    )
+    tokens = [b.text for b in result.boundaries]
+    assert len(tokens) > 1  # not one giant token
+    for tok in tokens:
+        assert display_width(tok) <= 28
+    assert "".join(tokens).replace(" ", "") == text.replace(" ", "")
+    offs = [b.offset_ms for b in result.boundaries]
+    assert offs == sorted(offs)
+
+
+def test_stub_pipeline_cues_respect_safe_area_and_keep_text(tmp_path):
+    # v0.2.0 end-to-end: the README-recommended offline path must produce
+    # cues that keep every segment char AND obey the safe-area rule.
+    from collections import Counter
+
+    s = synthesize_script(parse_script(SAMPLE), out_dir=tmp_path, provider_name="stub")
+    s = attach_subtitle_plan(s)
+    assert s.subtitle_cues
+    for cue in s.subtitle_cues:
+        assert len(cue.lines) <= SAFE_MAX_LINES
+        for line in cue.lines:
+            assert display_width(line) <= 28
+    seg_chars = Counter(
+        ch for seg in s.segments for ch in seg.text if not ch.isspace()
+    )
+    cue_chars = Counter(
+        ch for cue in s.subtitle_cues for ch in cue.text if not ch.isspace()
+    )
+    assert cue_chars == seg_chars  # no subtitle text lost anywhere
+
+
+def test_run_async_inside_running_loop_raises_clear_error():
+    # v0.2.0 fix: _run_async used to swallow its own "must be awaited"
+    # RuntimeError and surface asyncio.run's confusing internal error instead.
+    import asyncio
+
+    from zhicast.tts import _run_async
+
+    async def inside_loop():
+        async def noop():
+            return 42
+
+        with pytest.raises(RuntimeError, match="must be awaited"):
+            _run_async(noop())
+
+    asyncio.run(inside_loop())
+
+
+# --------------------------- version surfaces ---------------------------
+
+def test_version_surfaces_agree():
+    # v0.2.0 lockstep: VERSION file == package __version__ == pyproject version.
+    import tomllib
+
+    repo_root = Path(__file__).resolve().parent.parent
+    from zhicast import __version__
+
+    version_file = (repo_root / "VERSION").read_text(encoding="utf-8").strip()
+    assert version_file == __version__
+    pyproject = tomllib.loads((repo_root / "pyproject.toml").read_text(encoding="utf-8"))
+    assert pyproject["project"]["version"] == __version__
 
 
 # --------------------------- overlay frames ---------------------------
