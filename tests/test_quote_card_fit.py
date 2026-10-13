@@ -4,10 +4,16 @@ v0.3.0 fix: _draw_quote_card used a fixed 40px font, so a long quote computed
 y0 = (1080 - total_h) // 2 < 0 and the card (with its text) was drawn partly
 off the top of the canvas. The card now auto-shrinks through a font ladder
 and clamps to the canvas for pathological inputs.
+
+Font-size assertions only run when a real (truetype) font is resolvable:
+CI runners have no CJK font, Pillow falls back to its size-independent
+bitmap default, and the ladder is a no-op there. The on-canvas invariant
+is pinned for every environment.
 """
 
 from __future__ import annotations
 
+import zhicast.overlay as overlay
 from PIL import Image, ImageDraw
 
 from zhicast.model import Segment, ZhiScript, CoverSpec
@@ -37,25 +43,33 @@ def _card_geometry(text: str, source: str = "测试来源") -> tuple[int, int, i
     return size, y0, total_h
 
 
+def _real_font() -> bool:
+    # _resolve_font caches its choice: a path string = truetype, True = bitmap fallback
+    return isinstance(overlay._DEFAULT_FONT, str)
+
+
 def test_short_quote_keeps_original_layout():
     size, y0, total_h = _card_geometry(SHORT_QUOTE)
     assert size == 40  # unchanged look for the common case
     assert y0 == (1080 - total_h) // 2  # centered, unclamped
 
 
-def test_long_quote_shrinks_font_and_fits_canvas():
+def test_long_quote_stays_on_canvas():
     size, y0, total_h = _card_geometry(LONG_QUOTE)
-    assert size < 40  # font ladder engaged
-    assert total_h <= _QUOTE_CARD_MAX_H
-    assert y0 >= _QUOTE_MIN_TOP_PX
+    assert y0 >= _QUOTE_MIN_TOP_PX  # never drawn off the top edge
     assert y0 + total_h <= 1080  # bottom stays on-canvas
+    if _real_font():
+        assert size < 40  # font ladder engaged
+        assert total_h <= _QUOTE_CARD_MAX_H
 
 
 def test_pathological_quote_still_starts_on_canvas():
     huge = LONG_QUOTE * 4
     size, y0, total_h = _card_geometry(huge)
-    assert size == 24  # at the font floor
-    assert y0 == _QUOTE_MIN_TOP_PX  # clamped instead of negative
+    assert y0 >= _QUOTE_MIN_TOP_PX  # pinned regardless of font availability
+    if _real_font():
+        assert size == 24  # at the font floor
+        assert y0 == _QUOTE_MIN_TOP_PX  # clamped instead of negative
 
 
 def test_quote_frame_renders_without_crash(tmp_path):
