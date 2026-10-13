@@ -38,6 +38,7 @@ def parse_script(markdown: str, *, accent: str = "#0071E3") -> ZhiScript:
     i = 0
     para: list[str] = []
     current_section = ""  # last seen ## heading (carries into following cards)
+    in_fence = False  # inside a ``` code block
 
     def flush_paragraph() -> None:
         nonlocal para
@@ -50,6 +51,21 @@ def parse_script(markdown: str, *, accent: str = "#0071E3") -> ZhiScript:
     while i < len(lines):
         line = lines[i]
         stripped = line.strip()
+
+        # Fenced code blocks must never be read as structure: a `# comment`
+        # inside ``` would otherwise become the script title, and the fence
+        # markers would leak into narration text. Fence lines are dropped;
+        # interior lines flow into the current paragraph as plain narration.
+        if stripped.startswith("```"):
+            flush_paragraph()
+            in_fence = not in_fence
+            i += 1
+            continue
+
+        if in_fence:
+            para.append(stripped)
+            i += 1
+            continue
 
         if not stripped:
             flush_paragraph()

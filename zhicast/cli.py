@@ -51,9 +51,15 @@ def build(
     typer.echo(f"      title={script_obj.title!r} segments={len(script_obj.segments)}")
 
     typer.echo(f"[2/6] tts ({provider}, voice={voice})")
-    script_obj = synthesize_script(
-        script_obj, out_dir=audio_dir, provider_name=provider, voice=voice
-    )
+    try:
+        script_obj = synthesize_script(
+            script_obj, out_dir=audio_dir, provider_name=provider, voice=voice
+        )
+    except NotImplementedError as e:
+        # reserved providers (doubao/qwen) report cleanly, like the
+        # script-not-found path — never a raw traceback
+        typer.echo(f"error: {e}", err=True)
+        raise typer.Exit(code=2)
     typer.echo(f"      total={script_obj.total_ms/1000:.1f}s")
 
     typer.echo("[3/6] subtitle plan (字幕安全区)")

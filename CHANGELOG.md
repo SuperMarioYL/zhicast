@@ -4,6 +4,30 @@ All notable changes to ZhiCast are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [SemVer](https://semver.org/).
 
+## [0.3.0] — 2026-10-14
+
+### Fixed
+
+- **Release 资产真正附到 GitHub Release**：release 工作流此前构建 dist/ 后只上传
+  CI artifact，Release 页面资产始终为空；现在新增 attach 步骤，用
+  `gh release upload --clobber` 把 wheel/sdist/checksums 附到对应 Release
+  （Release 尚不存在时自动创建）。
+- **围栏代码块不再被解析成脚本结构**：``` 代码块内的 `# 注释` 此前会成为脚本
+  标题（封面随之被改写），``` 标记行也会泄漏进旁白文本；现在围栏内一律按普通
+  旁白处理，围栏标记行丢弃，无围栏脚本解析行为不变。
+- **用户面失败改为干净报错**：`zhicast serve` 所需的 python-multipart 随包声明，
+  `pip install` 后开箱即用（不再需要 README 中的手动补装步骤）；Web 下载接口对
+  不存在的 job 返回 404 而不是 500；`--tts-provider doubao|qwen` 输出一行清晰
+  错误并以退出码 2 结束，不再抛出整屏 traceback。
+
+### Changed
+
+- 长引用卡片自适应字号：引用卡片超过画布高度时按 40→24px 阶梯缩小字号并重排，
+  病理超长输入钳制在画布内起始；短引用渲染与旧版逐像素一致。
+- 版本号全表面 lockstep 升至 0.3.0：`VERSION`、`pyproject.toml`、
+  `zhicast.__version__`、README/README.en 徽标行、`web/site.json`
+  （`meta.content_version` + `footer.tag`）。
+
 ## [0.2.0] — 2026-09-09
 
 ### Fixed
@@ -40,5 +64,6 @@ All notable changes to ZhiCast are documented here. The format follows
 - 双语 README（中文主文档 + README.en.md）、CI（pytest + ffmpeg）、
   demo GIF（vhs）、GitHub Pages 产品站。
 
+[0.3.0]: https://github.com/SuperMarioYL/zhicast/releases/tag/v0.3.0
 [0.2.0]: https://github.com/SuperMarioYL/zhicast/releases/tag/v0.2.0
 [0.1.0]: https://github.com/SuperMarioYL/zhicast/releases/tag/v0.1.0

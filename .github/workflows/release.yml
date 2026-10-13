@@ -28,6 +28,15 @@ jobs:
         with:
           name: dist
           path: dist/*
+      # upload-artifact only produces a CI artifact — without this step the
+      # GitHub Release ships with zero downloadable assets.
+      - name: Attach assets to the GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "$GITHUB_REF_NAME" dist/* --clobber \
+            || gh release create "$GITHUB_REF_NAME" dist/* \
+                 --title "zhicast $GITHUB_REF_NAME" --generate-notes
 
   # Optional PyPI trusted-publishing. Opt-in: set the repo variable
   # PYPI_PUBLISH=true and register a Trusted Publisher before enabling.

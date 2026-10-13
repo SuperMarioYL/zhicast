@@ -186,16 +186,43 @@ def _draw_titlecard(img: Image.Image, seg) -> None:
     )
 
 
+# Quote card font ladder: the largest size whose wrapped card fits the canvas
+# height wins; 24 is the floor for very long quotes.
+_QUOTE_FONT_SIZES = (40, 36, 32, 28, 24)
+# 64px breathing margin top/bottom around the quote card.
+_QUOTE_CARD_MAX_H = VIDEO_HEIGHT - 128
+# Pathological overflow beyond the 24px floor: the card still starts on-canvas.
+_QUOTE_MIN_TOP_PX = 32
+
+
+def _quote_layout(draw: ImageDraw.ImageDraw, text: str, source: str):
+    """Pick the quote font size whose wrapped card fits the canvas height.
+
+    Returns (size, font, source_font, wrapped, line_h, total_h) using the same
+    card metrics as before (padding 96 + source line), so short quotes render
+    pixel-identical at the original 40px."""
+    size, font, source_font, wrapped, line_h, total_h = 24, None, None, [], 0, 0
+    for size in _QUOTE_FONT_SIZES:
+        font = _resolve_font(size)
+        source_font = _resolve_font(max(20, size - 14))
+        wrapped = _fit_wrap(text, font, 1280, draw)
+        line_h = _text_size(draw, "Ay中", font)[1] + 16
+        src_h = (_text_size(draw, source, source_font)[1] + 18) if source else 0
+        total_h = line_h * len(wrapped) + src_h + 96
+        if total_h <= _QUOTE_CARD_MAX_H:
+            break
+    return size, font, source_font, wrapped, line_h, total_h
+
+
 def _draw_quote_card(img: Image.Image, seg) -> None:
     draw = ImageDraw.Draw(img, "RGBA")
-    font = _resolve_font(40)
-    source_font = _resolve_font(26)
-    wrapped = _fit_wrap(seg.text, font, 1280, draw)
-    line_h = _text_size(draw, "Ay中", font)[1] + 16
-    src_h = (_text_size(draw, seg.source or "", source_font)[1] + 18) if seg.source else 0
-    total_h = line_h * len(wrapped) + src_h + 96
+    _, font, source_font, wrapped, line_h, total_h = _quote_layout(
+        draw, seg.text, seg.source
+    )
     x0 = (VIDEO_WIDTH - 1400) // 2
     y0 = (VIDEO_HEIGHT - total_h) // 2
+    if y0 < _QUOTE_MIN_TOP_PX:
+        y0 = _QUOTE_MIN_TOP_PX
     x1, y1 = x0 + 1400, y0 + total_h
     draw.rounded_rectangle(
         [x0, y0, x1, y1], radius=24, fill=(*BG_PANEL, 235), outline=ACCENT_SOFT, width=2

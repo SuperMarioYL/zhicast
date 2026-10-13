@@ -9,7 +9,7 @@
 
 **Convert headings, narration and quotes into audio, subtitles and scene cards, producing MP4, cover and SRT files.**
 
-`v0.2.0` · `Python 3.12+ / ffmpeg` · [MIT](LICENSE)
+`v0.3.0` · `Python 3.12+ / ffmpeg` · [MIT](LICENSE)
 
 [Website](https://zhicast.lei6393.com) · [Demo record](docs/demo-results.json)
 
@@ -32,15 +32,13 @@ Source entry points: [zhicast/cli.py](zhicast/cli.py) · [zhicast/parse.py](zhic
 
 ## Install
 
-Requires Python 3.12+, uv, ffmpeg/ffprobe, libx264/AAC encoders and a CJK font. On macOS use brew install ffmpeg; on Debian/Ubuntu install ffmpeg and fonts-noto-cjk. Web forms currently also require the separate python-multipart install shown below.
+Requires Python 3.12+, uv, ffmpeg/ffprobe, libx264/AAC encoders and a CJK font. On macOS use brew install ffmpeg; on Debian/Ubuntu install ffmpeg and fonts-noto-cjk. The python-multipart dependency used by web forms ships with the package, so `serve` works out of the box.
 
 ```bash
 git clone https://github.com/SuperMarioYL/zhicast.git
 cd zhicast
 uv venv --python 3.12
 uv pip install --python .venv/bin/python -e .
-# Local Web form support:
-uv pip install --python .venv/bin/python python-multipart
 ```
 
 ## Quickstart

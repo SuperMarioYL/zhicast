@@ -9,7 +9,7 @@
 
 **将标题、正文和引用转换成配音、字幕与卡片画面，输出 MP4、封面和 SRT。**
 
-`v0.2.0` · `Python 3.12+ / ffmpeg` · [MIT](LICENSE)
+`v0.3.0` · `Python 3.12+ / ffmpeg` · [MIT](LICENSE)
 
 [Website](https://zhicast.lei6393.com) · [Demo record](docs/demo-results.json)
 
@@ -32,15 +32,13 @@ parse 构建 ZhiScript，tts 填写片段时间与音频，subtitle 生成 SRT c
 
 ## 安装
 
-需要 Python 3.12+、uv、ffmpeg/ffprobe、可用的 libx264/AAC 编码器和中文字体。macOS 可运行 brew install ffmpeg；Debian/Ubuntu 可安装 ffmpeg 与 fonts-noto-cjk。Web 表单当前还需单独安装 python-multipart，如下。
+需要 Python 3.12+、uv、ffmpeg/ffprobe、可用的 libx264/AAC 编码器和中文字体。macOS 可运行 brew install ffmpeg；Debian/Ubuntu 可安装 ffmpeg 与 fonts-noto-cjk。Web 表单依赖的 python-multipart 已随包声明，安装后 `serve` 开箱即用。
 
 ```bash
 git clone https://github.com/SuperMarioYL/zhicast.git
 cd zhicast
 uv venv --python 3.12
 uv pip install --python .venv/bin/python -e .
-# Local Web form support:
-uv pip install --python .venv/bin/python python-multipart
 ```
 
 ## 快速开始

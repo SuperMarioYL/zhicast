@@ -1,6 +1,6 @@
 [project]
 name = "zhicast"
-version = "0.2.0"
+version = "0.3.0"
 description = "把B站知识区文字脚本转成16:9横屏知识视频的开源工具"
 readme = "README.md"
 license = "MIT"
@@ -23,6 +23,7 @@ dependencies = [
     "srt>=3.5.0",
     "pydantic>=2.0",
     "fastapi>=0.110",
+    "python-multipart>=0.0.9",
     "uvicorn>=0.29",
     "jinja2>=3.1",
     "httpx>=0.27",

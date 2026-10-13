@@ -14,7 +14,7 @@ import tempfile
 import uuid
 from pathlib import Path
 
-from fastapi import FastAPI, Form
+from fastapi import FastAPI, Form, HTTPException
 from fastapi.responses import FileResponse, HTMLResponse
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
@@ -97,21 +97,21 @@ def build_app(*, provider: str = "edge", jobs_root: str | Path | None = None) ->
     def dl_video(job_id: str) -> FileResponse:
         p = jobs_root / job_id / "video.mp4"
         if not p.exists():
-            raise FileNotFoundError(p)
+            raise HTTPException(status_code=404, detail="job not found")
         return FileResponse(p, media_type="video/mp4", filename="video.mp4")
 
     @app.get("/files/{job_id}/cover.png")
     def dl_cover(job_id: str) -> FileResponse:
         p = jobs_root / job_id / "cover.png"
         if not p.exists():
-            raise FileNotFoundError(p)
+            raise HTTPException(status_code=404, detail="job not found")
         return FileResponse(p, media_type="image/png", filename="cover.png")
 
     @app.get("/files/{job_id}/video.srt")
     def dl_srt(job_id: str) -> FileResponse:
         p = jobs_root / job_id / "video.srt"
         if not p.exists():
-            raise FileNotFoundError(p)
+            raise HTTPException(status_code=404, detail="job not found")
         return FileResponse(p, media_type="text/plain", filename="video.srt")
 
     return app
