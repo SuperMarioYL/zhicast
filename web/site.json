@@ -212,8 +212,8 @@
       "en": "Start with complete input"
     },
     "body": {
-      "zh": "需要 Python 3.12+、uv、ffmpeg/ffprobe、可用的 libx264/AAC 编码器和中文字体。macOS 可运行 brew install ffmpeg；Debian/Ubuntu 可安装 ffmpeg 与 fonts-noto-cjk。Web 表单当前还需单独安装 python-multipart，如下。",
-      "en": "Requires Python 3.12+, uv, ffmpeg/ffprobe, libx264/AAC encoders and a CJK font. On macOS use brew install ffmpeg; on Debian/Ubuntu install ffmpeg and fonts-noto-cjk. Web forms currently also require the separate python-multipart install shown below."
+      "zh": "需要 Python 3.12+、uv、ffmpeg/ffprobe、可用的 libx264/AAC 编码器和中文字体。macOS 可运行 brew install ffmpeg；Debian/Ubuntu 可安装 ffmpeg 与 fonts-noto-cjk。v0.3.0 起 python-multipart 随包声明，zhicast serve 开箱即用；围栏代码块按普通旁白解析，不再被误读为脚本结构。",
+      "en": "Requires Python 3.12+, uv, ffmpeg/ffprobe, libx264/AAC encoders and a CJK font. On macOS use brew install ffmpeg; on Debian/Ubuntu install ffmpeg and fonts-noto-cjk. As of v0.3.0 python-multipart ships with the package so zhicast serve works out of the box, and fenced code blocks parse as plain narration instead of script structure."
     },
     "steps": [
       {
@@ -221,7 +221,7 @@
           "zh": "安装",
           "en": "Install"
         },
-        "code": "git clone https://github.com/SuperMarioYL/zhicast.git\ncd zhicast\nuv venv --python 3.12\nuv pip install --python .venv/bin/python -e .\n# Local Web form support:\nuv pip install --python .venv/bin/python python-multipart"
+        "code": "git clone https://github.com/SuperMarioYL/zhicast.git\ncd zhicast\nuv venv --python 3.12\nuv pip install --python .venv/bin/python -e ."
       },
       {
         "title": {
