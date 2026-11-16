@@ -1,6 +1,6 @@
 [project]
 name = "zhicast"
-version = "0.3.0"
+version = "0.4.0"
 description = "把B站知识区文字脚本转成16:9横屏知识视频的开源工具"
 readme = "README.md"
 license = "MIT"

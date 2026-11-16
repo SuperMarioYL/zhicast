@@ -18,6 +18,7 @@ import srt
 from .model import (
     SAFE_MAX_LINES,
     SubtitleCue,
+    WordBoundary,
     ZhiScript,
 )
 
@@ -93,6 +94,48 @@ def _fits_cue_budget(pending: list[str], word: str) -> bool:
     return len(_wrap_to_safe([*pending, word])) <= SAFE_MAX_LINES
 
 
+def _timed_pieces(b: WordBoundary) -> list[tuple[int, int, str]]:
+    """Split a boundary wider than one safe line into timed pieces.
+
+    The cue loop can start a new cue between words but cannot split one word, so
+    a single over-wide token (e.g. a spaceless CJK run) would wrap past
+    SAFE_MAX_LINES inside one cue. Each piece is at most SAFE_LINE_UNITS wide, so
+    the budget check above keeps every cue at <= SAFE_MAX_LINES lines by
+    construction. The boundary's audio window is divided evenly across the
+    pieces — the same distribution rule the TTS sentence fallback uses.
+    """
+    parts = _split_wide_token(b.text)
+    if len(parts) == 1:
+        return [(b.offset_ms, b.duration_ms, b.text)]
+    pieces: list[tuple[int, int, str]] = []
+    for k, part in enumerate(parts):
+        start = b.offset_ms + (b.duration_ms * k) // len(parts)
+        end = b.offset_ms + (b.duration_ms * (k + 1)) // len(parts)
+        pieces.append((start, max(end - start, 1), part))
+    return pieces
+
+
+def _settle_cue_timings(cues: list[SubtitleCue], total_ms: int) -> list[SubtitleCue]:
+    """Settle cue tails so the timeline invariants hold.
+
+    MIN_CUE_MS/MAX_CUE_MS shape a cue while it is built, but nothing there knows
+    the next cue: a short segment widened to the readability floor can overlap
+    the cue that follows, and the last cue can run past the video. This pass only
+    ever trims — cue i ends at or before cue i+1, never after the end of the
+    timeline, and leaves a 弹幕-rhythm gap when it still clears MIN_CUE_MS.
+    """
+    for i, cue in enumerate(cues):
+        hard_end = cues[i + 1].start_ms if i + 1 < len(cues) else total_ms
+        end = min(cue.end_ms, hard_end)
+        gap_end = hard_end - RHYTHM_GAP_MS
+        if gap_end > cue.start_ms + MIN_CUE_MS:
+            end = min(end, gap_end)
+        end = max(end, cue.start_ms)
+        if end != cue.end_ms:
+            cues[i] = cue.model_copy(update={"end_ms": end})
+    return cues
+
+
 def build_subtitle_plan(script: ZhiScript) -> list[SubtitleCue]:
     """Build safe-area-constrained cues from every segment's word boundaries.
 
@@ -128,31 +171,27 @@ def build_subtitle_plan(script: ZhiScript) -> list[SubtitleCue]:
         cue_start: int | None = None
         cue_end = 0
         for b in seg.boundaries:
-            abs_off = seg.start_ms + b.offset_ms
-            abs_end = abs_off + b.duration_ms
-            # sentence-ish break: a long silence gap closes the current cue
-            if pending_words and cue_start is not None and abs_off - cue_end > 350:
-                flush(cue_start, cue_end)
-                cue_start = None
-            # line budget: a cue holds at most SAFE_MAX_LINES wrapped lines —
-            # close it and let the word start the next cue instead of dropping it
-            if cue_start is not None and not _fits_cue_budget(
-                [w[2] for w in pending_words], b.text
-            ):
-                flush(cue_start, cue_end)
-                cue_start = None
-            if cue_start is None:
-                cue_start = abs_off
-            cue_end = abs_end
-            pending_words.append((b.offset_ms, b.duration_ms, b.text))
+            for off_ms, dur_ms, text in _timed_pieces(b):
+                abs_off = seg.start_ms + off_ms
+                abs_end = abs_off + dur_ms
+                # sentence-ish break: a long silence gap closes the current cue
+                if pending_words and cue_start is not None and abs_off - cue_end > 350:
+                    flush(cue_start, cue_end)
+                    cue_start = None
+                # line budget: a cue holds at most SAFE_MAX_LINES wrapped lines —
+                # close it and let the word start the next cue instead of dropping it
+                if cue_start is not None and not _fits_cue_budget(
+                    [w[2] for w in pending_words], text
+                ):
+                    flush(cue_start, cue_end)
+                    cue_start = None
+                if cue_start is None:
+                    cue_start = abs_off
+                cue_end = abs_end
+                pending_words.append((off_ms, dur_ms, text))
         flush(cue_start, cue_end)
 
-    # apply 弹幕-rhythm gaps between adjacent cues
-    for i in range(len(cues) - 1):
-        gap_end = cues[i + 1].start_ms - RHYTHM_GAP_MS
-        if gap_end > cues[i].start_ms + MIN_CUE_MS:
-            cues[i] = cues[i].model_copy(update={"end_ms": gap_end})
-    return cues
+    return _settle_cue_timings(cues, script.total_ms)
 
 
 def attach_subtitle_plan(script: ZhiScript) -> ZhiScript:

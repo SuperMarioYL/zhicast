@@ -20,7 +20,6 @@ from .model import CoverSpec, Segment, ZhiScript
 
 _HEADING1 = re.compile(r"^#\s+(?P<title>.+?)\s*$")
 _HEADING2 = re.compile(r"^##\s+(?P<title>.+?)\s*$")
-_QUOTE = re.compile(r"^>\s?(?P<text>.+?)\s*$")
 _SOURCE = re.compile(r"\((?P<src>[^)]+)\)\s*$")  # trailing "(来源)" on a quote
 
 
@@ -87,23 +86,34 @@ def parse_script(markdown: str, *, accent: str = "#0071E3") -> ZhiScript:
             i += 1
             continue
 
-        mq = _QUOTE.match(stripped)
-        if mq:
+        if stripped.startswith(">"):
             flush_paragraph()
-            quote_text = mq.group("text").strip()
-            src_match = _SOURCE.search(quote_text)
-            source = ""
-            if src_match:
-                source = src_match.group("src").strip()
-                quote_text = _SOURCE.sub("", quote_text).strip()
-            segments.append(
-                Segment(
-                    kind="quote",
-                    text=quote_text,
-                    source=source or current_section,
+            # A blockquote is the whole run of consecutive `>` lines (CommonMark):
+            # emitting one quote card per line split the quote and attributed the
+            # first line to the enclosing section heading instead of its citation.
+            quote_lines: list[str] = []
+            while i < len(lines):
+                line_text = lines[i].strip()
+                if not line_text.startswith(">"):
+                    break
+                body = line_text[1:].strip()
+                if body:
+                    quote_lines.append(body)
+                i += 1
+            quote_text = " ".join(quote_lines).strip()
+            if quote_text:
+                src_match = _SOURCE.search(quote_text)
+                source = ""
+                if src_match:
+                    source = src_match.group("src").strip()
+                    quote_text = _SOURCE.sub("", quote_text).strip()
+                segments.append(
+                    Segment(
+                        kind="quote",
+                        text=quote_text,
+                        source=source or current_section,
+                    )
                 )
-            )
-            i += 1
             continue
 
         para.append(stripped)

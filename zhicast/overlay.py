@@ -83,7 +83,8 @@ def _text_size(draw: ImageDraw.ImageDraw, text: str, font) -> tuple[int, int]:
 
 def _fit_wrap(text: str, font, max_width: int, draw: ImageDraw.ImageDraw) -> list[str]:
     """Wrap text to fit max_width, breaking on spaces (ASCII) or anywhere
-    (CJK, where words are characters)."""
+    (CJK, where words are characters). A word wider than the whole line is
+    hard-broken; a line break never cuts a word that would fit on its own."""
     out: list[str] = []
     for raw_line in text.split("\n"):
         if not raw_line:
@@ -91,16 +92,15 @@ def _fit_wrap(text: str, font, max_width: int, draw: ImageDraw.ImageDraw) -> lis
             continue
         cur = ""
         for ch in raw_line:
-            cand = cur + ch
-            if ch == " " and cur and _text_size(draw, cand, font)[0] <= max_width:
-                cur = cand
-                continue
-            if _text_size(draw, cand, font)[0] <= max_width:
-                cur = cand
-            else:
-                if cur:
+            while cur and _text_size(draw, cur + ch, font)[0] > max_width:
+                cut = cur.rfind(" ")
+                if cut > 0:
+                    out.append(cur[:cut])
+                    cur = cur[cut + 1:]
+                else:
                     out.append(cur)
-                cur = ch
+                    cur = ""
+            cur += ch
         out.append(cur)
     return out
 

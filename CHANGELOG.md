@@ -4,6 +4,34 @@ All notable changes to ZhiCast are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [SemVer](https://semver.org/).
 
+## [0.4.0] — 2026-11-17
+
+### Fixed
+
+- **字幕 cue 不再重叠**：短片段（例如 ~430ms 的 `## 章节` 标题卡）此前会被 MIN_CUE_MS
+  拉长到 800ms，越过下一条 cue 的起点；用仓库自带 SAMPLE 实测有 4 对重叠。SRT 中两条字幕
+  同时出现，而 `build_scenes` 只取第一条匹配的 cue，重叠 cue 的开头词从未烧进画面。现在
+  cue 尾在同一次定稿中收敛为"绝不越过下一条 cue 起点"。
+- **字幕 cue 不再跨长静音滞留**：弹幕节奏后处理此前只要"有空隙"就把 cue 尾改写到
+  `下一条起点 - 120ms`，实际是拉长而非收缩；实测把一条 cue 拉到 22.9s（契约 MAX_CUE_MS
+  为 6s）。现在后处理只做收缩，`MAX_CUE_MS` 上限重新生效。
+- **单个超宽 token 不再撑破行预算**：一个宽于单行的 TTS token（如无空格中文长词）此前会生成
+  3 行 cue，违反 ≤2 行安全区契约（README"最多两行"）。现在超宽 token 按时长等分为多个词片，
+  由既有行预算先切 cue 再排版，≤2 行按构造成立。
+- **连续多行引用合并为一张引用卡**：此前每个 `>` 行各生成一张卡，且首行会把当前 `## 章节`
+  当作引用来源（错误的来源标注）。现在整段 blockquote 生成一张卡，来源取块尾的 `(来源)`。
+- **标题卡/封面按词断行**：`_fit_wrap` 文档声称按空格断行，实际在超宽时直接切断 ASCII 单词
+  （实测 `Generation` 被切成 `Gene`/`ration`）；现在优先在最后一个空格处换行，只有单词本身
+  宽于整行时才硬切。
+
+### Changed
+
+- 版本号全表面 lockstep 升至 0.4.0：`VERSION`、`pyproject.toml`、
+  `zhicast.__version__`、README/README.en 徽标行、`web/site.json`
+  （`meta.content_version` + `footer.tag`）。
+- 示例输出随字幕定稿更新为 3 段、3 条字幕、5 张场景图，README、README.en、
+  `web/site.json` 与 `docs/demo-results.json` 记录同步。
+
 ## [0.3.0] — 2026-10-14
 
 ### Fixed
@@ -64,6 +92,7 @@ All notable changes to ZhiCast are documented here. The format follows
 - 双语 README（中文主文档 + README.en.md）、CI（pytest + ffmpeg）、
   demo GIF（vhs）、GitHub Pages 产品站。
 
+[0.4.0]: https://github.com/SuperMarioYL/zhicast/releases/tag/v0.4.0
 [0.3.0]: https://github.com/SuperMarioYL/zhicast/releases/tag/v0.3.0
 [0.2.0]: https://github.com/SuperMarioYL/zhicast/releases/tag/v0.2.0
 [0.1.0]: https://github.com/SuperMarioYL/zhicast/releases/tag/v0.1.0

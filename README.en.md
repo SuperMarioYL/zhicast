@@ -9,7 +9,7 @@
 
 **Convert headings, narration and quotes into audio, subtitles and scene cards, producing MP4, cover and SRT files.**
 
-`v0.3.0` · `Python 3.12+ / ffmpeg` · [MIT](LICENSE)
+`v0.4.0` · `Python 3.12+ / ffmpeg` · [MIT](LICENSE)
 
 [Website](https://zhicast.lei6393.com) · [Demo record](docs/demo-results.json)
 
@@ -57,7 +57,7 @@ Complete inputs and execution steps are included in the commands above and the [
 .venv/bin/zhicast build examples/presentation-script.md -o out/ --tts-provider stub
 .venv/bin/zhicast serve --port 8000 --tts-provider stub
 ```
-For real speech, change build’s --tts-provider to edge and choose an available --voice. `# Title` sets the cover, `## Section` creates a title segment, `> Quote (source)` creates a quote card and paragraphs become narration. build retains out/video.mp4, cover.png, video.srt and manifest.json.
+For real speech, change build’s --tts-provider to edge and choose an available --voice. `# Title` sets the cover, `## Section` creates a title segment, `> Quote (source)` creates a quote card (consecutive quote lines merge into one card) and paragraphs become narration. build retains out/video.mp4, cover.png, video.srt and manifest.json.
 
 ## Recorded demo
 
@@ -70,7 +70,7 @@ For real speech, change build’s --tts-provider to edge and choose an available
 
 ### Render and inspect video
 
-Produces 3 segments, 3 subtitle cues, 6 scene images and a 1920×1080, 30fps H.264 video.
+Produces 3 segments, 3 subtitle cues, 5 scene images and a 1920×1080, 30fps H.264 video.
 
 ```text
 $ .venv/bin/python examples/presentation-demo.py
@@ -78,7 +78,7 @@ $ .venv/bin/python examples/presentation-demo.py
   "tts_provider": "stub (silent audio)",
   "segments": 3,
   "subtitle_cues": 3,
-  "scene_images": 6,
+  "scene_images": 5,
   "cover_exists": true,
   "srt_exists": true,
   "video_stream": {

@@ -9,7 +9,7 @@
 
 **将标题、正文和引用转换成配音、字幕与卡片画面，输出 MP4、封面和 SRT。**
 
-`v0.3.0` · `Python 3.12+ / ffmpeg` · [MIT](LICENSE)
+`v0.4.0` · `Python 3.12+ / ffmpeg` · [MIT](LICENSE)
 
 [Website](https://zhicast.lei6393.com) · [Demo record](docs/demo-results.json)
 
@@ -57,7 +57,7 @@ uv pip install --python .venv/bin/python -e .
 .venv/bin/zhicast build examples/presentation-script.md -o out/ --tts-provider stub
 .venv/bin/zhicast serve --port 8000 --tts-provider stub
 ```
-要生成真实配音，将 build 的 --tts-provider 改为 edge，并选择实际可用的 --voice。`# 标题` 用于封面，`## 章节` 生成标题片段，`> 引用 (来源)` 生成引用卡，普通段落作为旁白。上面的 build 会保留 out/video.mp4、cover.png、video.srt 与 manifest.json。
+要生成真实配音，将 build 的 --tts-provider 改为 edge，并选择实际可用的 --voice。`# 标题` 用于封面，`## 章节` 生成标题片段，`> 引用 (来源)` 生成引用卡（连续多行引用合并为同一张卡），普通段落作为旁白。上面的 build 会保留 out/video.mp4、cover.png、video.srt 与 manifest.json。
 
 ## 实际 Demo
 
@@ -70,7 +70,7 @@ uv pip install --python .venv/bin/python -e .
 
 ### 生成并检查视频
 
-得到 3 段、3 条字幕、6 张场景图以及 1920×1080、30fps 的 H.264 视频。
+得到 3 段、3 条字幕、5 张场景图以及 1920×1080、30fps 的 H.264 视频。
 
 ```text
 $ .venv/bin/python examples/presentation-demo.py
@@ -78,7 +78,7 @@ $ .venv/bin/python examples/presentation-demo.py
   "tts_provider": "stub (silent audio)",
   "segments": 3,
   "subtitle_cues": 3,
-  "scene_images": 6,
+  "scene_images": 5,
   "cover_exists": true,
   "srt_exists": true,
   "video_stream": {
